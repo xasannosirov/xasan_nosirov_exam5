@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package job_service;
+option go_package = "genproto/job_service";
+
+import "job_model.proto";
+
+service JobService {
+  rpc CreateJob(Job) returns (ResponseStatus);
+}

@@ -1,0 +1,20 @@
+2024-04-30T18:16:51.601+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T18:16:52.733+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T18:27:30.288+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T18:27:31.157+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T20:13:25.635+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T20:13:26.650+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T20:17:38.194+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T20:17:38.874+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T20:32:08.040+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T20:32:09.175+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T20:39:53.027+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T20:39:53.514+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T20:48:35.007+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T20:48:35.527+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T21:25:57.514+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T21:25:58.324+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T21:44:40.334+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T21:44:41.071+0500	INFO	app/main.go:36	Conten service stops !
+2024-04-30T21:49:38.935+0500	INFO	app/app.go:96	gRPC Server Listening	{"url": ":1111"}
+2024-04-30T21:49:39.703+0500	INFO	app/main.go:36	Conten service stops !

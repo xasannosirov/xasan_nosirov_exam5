@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package job_service;
+option go_package = "genproto/job_service";
+
+message Job {
+  string id = 1;
+  string created_at = 9;
+  string updated_at = 10;
+  string deleted_at = 11;
+}
+
+message ResponseStatus {
+  bool status = 1;
+}
