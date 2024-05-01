@@ -134,6 +134,7 @@ func (p clientRepo) DeleteClient(ctx context.Context, guid string) error {
 		Update(p.tableName).
 		SetMap(clauses).
 		Where(p.db.Sq.Equal("id", guid)).
+		Where("deleted_at IS NULL").
 		ToSql()
 	if err != nil {
 		return p.db.ErrSQLBuild(err, p.tableName+" delete")
@@ -167,6 +168,8 @@ func (p clientRepo) GetClient(ctx context.Context, params map[string]string) (*e
 			queryBuilder = queryBuilder.Where(p.db.Sq.Equal(key, value))
 		}
 	}
+	queryBuilder = queryBuilder.Where("deleted_at IS NULL")
+
 	query, args, err := queryBuilder.ToSql()
 	if err != nil {
 		return nil, p.db.ErrSQLBuild(err, fmt.Sprintf("%s %s", p.tableName, "get"))
@@ -228,6 +231,8 @@ func (p clientRepo) GetAllClients(ctx context.Context, limit uint64, offset uint
 	if limit != 0 {
 		queryBuilder = queryBuilder.Limit(limit).Offset(offset)
 	}
+
+	queryBuilder = queryBuilder.Where("deleted_at IS NULL")
 
 	query, args, err := queryBuilder.ToSql()
 	if err != nil {
@@ -391,13 +396,13 @@ func (p clientRepo) GetAllHiddenClients(ctx context.Context, limit uint64, offse
 		return nil, p.db.ErrSQLBuild(err, fmt.Sprintf("%s %s", p.tableName, "list"))
 	}
 
+	fmt.Println(query)
 	rows, err := p.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, p.db.Error(err)
 	}
 	defer rows.Close()
 
-	clients = make([]*entity.Client, 0)
 	for rows.Next() {
 		var (
 			client          entity.Client
@@ -454,7 +459,6 @@ func (p clientRepo) UniqueEmail(ctx context.Context, request *entity.IsUnique) (
 	var (
 		client entity.Client
 	)
-
 	queryBuilder := p.clientsSelectQueryPrefix()
 	queryBuilder = queryBuilder.Where(p.db.Sq.Equal("email", request.Email))
 	queryBuilder = queryBuilder.Where("deleted_at IS NULL")
@@ -512,8 +516,8 @@ func (p clientRepo) UpdateRefresh(ctx context.Context, request *entity.UpdateRef
 	defer span.End()
 
 	clauses := map[string]any{
-		"refresh_token": request.RefreshToken,
-		"updated_at":    time.Now().Format(time.RFC3339),
+		"refresh":    request.RefreshToken,
+		"updated_at": time.Now().Format(time.RFC3339),
 	}
 	sqlStr, args, err := p.db.Sq.Builder.
 		Update(p.tableName).
@@ -543,9 +547,9 @@ func (p clientRepo) UpdatePassword(ctx context.Context, request *entity.UpdatePa
 
 	clauses := map[string]any{
 		"password":   request.NewPassword,
-		"deleted_at": time.Now().Format(time.RFC3339),
+		"updated_at": time.Now().Format(time.RFC3339),
 	}
-	sqlStr, args, err := p.db.Sq.Builder.
+	query, args, err := p.db.Sq.Builder.
 		Update(p.tableName).
 		SetMap(clauses).
 		Where(p.db.Sq.Equal("id", request.ClientID)).
@@ -555,7 +559,7 @@ func (p clientRepo) UpdatePassword(ctx context.Context, request *entity.UpdatePa
 		return &entity.Response{Status: false}, p.db.ErrSQLBuild(err, p.tableName+" update")
 	}
 
-	commandTag, err := p.db.Exec(ctx, sqlStr, args...)
+	commandTag, err := p.db.Exec(ctx, query, args...)
 	if err != nil {
 		return &entity.Response{Status: false}, p.db.Error(err)
 	}

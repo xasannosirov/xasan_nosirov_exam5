@@ -50,7 +50,7 @@ func New() *Config {
 	config.DB.User = getEnv("POSTGRES_USER", "postgres")
 	config.DB.Password = getEnv("POSTGRES_PASSWORD", "root")
 	config.DB.SslMode = getEnv("POSTGRES_SSLMODE", "disable")
-	config.DB.Name = getEnv("POSTGRES_DATABASE", "client_service_db")
+	config.DB.Name = getEnv("POSTGRES_DATABASE", "client_job_services_db")
 
 	// job service
 	config.JobService.Host = getEnv("JOB_SERVICE_RPC_HOST", "localhost")
