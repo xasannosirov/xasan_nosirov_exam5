@@ -279,7 +279,7 @@ func (s clientRPC) UniqueEmail(ctx context.Context, in *clientproto.IsUnique) (*
 	})
 	if err != nil {
 		s.logger.Error(err.Error())
-		return &clientproto.ResponseStatus{Status: false}, errors.New("Email is already in use")
+		return &clientproto.ResponseStatus{Status: false}, err
 	}
 
 	return &clientproto.ResponseStatus{Status: true}, nil
