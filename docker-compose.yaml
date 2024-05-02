@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
 
+  # Jeager Tracing
   jaeger-all-in-one:
     container_name: jaeger-all-in-one
     image: jaegertracing/all-in-one:latest
@@ -11,6 +12,7 @@ services:
       - "14268:14268"
       - "14250:14250"
 
+  #  OTLP Collector
   otel-collector:
     container_name: otel-collector
     image: ${OTELCOL_IMG}
@@ -22,6 +24,7 @@ services:
     depends_on:
       - jaeger-all-in-one
 
+  # Migrate
   migrate:
     image: migrate/migrate
     networks:
@@ -32,6 +35,7 @@ services:
     depends_on:
       - postgres-db
 
+  # Postgres Database
   postgres-db:
     container_name: postgres
     image: postgres
@@ -53,6 +57,7 @@ services:
       timeout: 10s
       retries: 5
 
+  # Client Service
   client-service:
     container_name: client-service
     build: ./client-service
@@ -63,6 +68,7 @@ services:
     networks:
       - db
 
+  # Job Service
   job-service:
     container_name: job-service
     build: ./job-service
@@ -74,6 +80,7 @@ services:
     networks:
       - db
 
+  # Admin API Gateway
   admin-api-gateway:
     container_name: admin-api-gateway
     build: ./admin-api-gateway
@@ -86,6 +93,7 @@ services:
     networks:
       - db
 
+  # API Gateway
   api-gateway:
     container_name: api-gateway
     build: ./api-gateway
@@ -99,9 +107,11 @@ services:
     networks:
       - db
 
+# Docker Networks
 networks:
   db:
     driver: bridge
 
+# Docker Volumes
 volumes:
   db:
