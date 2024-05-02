@@ -127,7 +127,7 @@ func (s clientRPC) GetClient(ctx context.Context, in *clientproto.ClientWithGUID
 	defer span.End()
 
 	client, err := s.clientUsecase.GetClient(ctx, map[string]string{
-		"guid": in.Guid,
+		"id": in.Guid,
 	})
 	if err != nil {
 		s.logger.Error(err.Error())

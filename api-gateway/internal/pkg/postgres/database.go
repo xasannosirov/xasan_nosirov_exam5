@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"strings"
 
+	errorspkg "api-gateway/internal/errors"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	pgxadapter "github.com/pckhoi/casbin-pgx-adapter/v2"
-	errorspkg "api-gateway/internal/errors"
 )
 
 // PostgresDB ...

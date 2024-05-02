@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package client_service;
+option go_package = "genproto/client_service";
+
+message Client {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  uint32 age = 4;
+  string gender = 5;
+  bool status = 6;
+  string refresh = 7;
+  string password = 8;
+  string email = 9;
+  string phone_number = 10;
+  string address = 11;
+  string created_at = 12;
+  string updated_at = 13;
+  string deleted_at = 14;
+}
+
+message IsUnique {
+  string email = 1;
+}
+
+message ClientWithGUID {
+  string guid = 1;
+}
+
+message RefreshRequest {
+  string client_id = 1;
+  string refresh_token = 2;
+}
+
+message UpdatePasswordRequest {
+  string client_id = 1;
+  string new_password = 2;
+}
+
+message ResponseStatus {
+  bool status = 1;
+}
+
+message DeleteClientResponse {
+  bool status = 1;
+}
+
+message ListRequest {
+  int64 page = 1;
+  int64 limit = 2;
+}
+
+message ListClientResponse {
+  repeated Client clients = 1;
+}

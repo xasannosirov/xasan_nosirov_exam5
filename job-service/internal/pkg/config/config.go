@@ -45,7 +45,7 @@ func New() *Config {
 	config.Context.Timeout = getEnv("CONTEXT_TIMEOUT", "30s")
 
 	// db configuration
-	config.DB.Host = getEnv("POSTGRES_HOST", "localhost")
+	config.DB.Host = getEnv("POSTGRES_HOST", "postgres")
 	config.DB.Port = getEnv("POSTGRES_PORT", "5432")
 	config.DB.User = getEnv("POSTGRES_USER", "postgres")
 	config.DB.Password = getEnv("POSTGRES_PASSWORD", "root")
@@ -53,7 +53,7 @@ func New() *Config {
 	config.DB.Name = getEnv("POSTGRES_DATABASE", "client_job_services_db")
 
 	// client service
-	config.ClientService.Host = getEnv("CLIENT_SERVICE_RPC_HOST", "localhost")
+	config.ClientService.Host = getEnv("CLIENT_SERVICE_RPC_HOST", "client-service")
 	config.ClientService.Port = getEnv("CLIENT_SERVICE_RPC_PORT", ":1111")
 
 	// otlp collector configuration

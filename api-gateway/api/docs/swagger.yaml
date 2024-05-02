@@ -1,188 +1,529 @@
 definitions:
-  models.CreateUser:
+  models.Client:
     properties:
+      address:
+        type: string
+      age:
+        type: integer
       email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
         type: string
       last_name:
         type: string
-      name:
-        type: string
       password:
         type: string
+      phone_number:
+        type: string
+      refresh:
+        type: string
+      status:
+        type: boolean
+    type: object
+  models.ClientJobRequest:
+    properties:
+      client_id:
+        type: string
+      job_id:
+        type: string
+      limit:
+        type: integer
+      page:
+        type: integer
+    type: object
+  models.ClientJobs:
+    properties:
+      client_id:
+        type: string
+      end_date:
+        type: string
+      job_id:
+        type: string
+      start_date:
+        type: string
+    type: object
+  models.ClientWithJobs:
+    properties:
+      client:
+        $ref: '#/definitions/models.Client'
+      jobs:
+        items:
+          $ref: '#/definitions/models.ResponseJob'
+        type: array
     type: object
   models.Error:
     properties:
       message:
         type: string
     type: object
-  models.StandardErrorModel:
+  models.Job:
     properties:
-      error:
-        $ref: '#/definitions/models.Error'
-    type: object
-  models.User:
-    properties:
-      email:
+      address:
+        type: string
+      company:
+        type: string
+      employment_type:
         type: string
       id:
         type: string
-      last_name:
+      level:
+        type: string
+      location_type:
         type: string
       name:
         type: string
-      password:
-        type: string
+      salary:
+        type: number
     type: object
-  models.UserResponse:
+  models.ResponseJob:
     properties:
-      access_token:
+      address:
         type: string
-      created_at:
+      company:
         type: string
-      email:
+      employment_type:
+        type: string
+      end_date:
         type: string
       id:
         type: string
-      last_name:
+      level:
+        type: string
+      location_type:
         type: string
       name:
         type: string
-      password:
+      salary:
+        type: number
+      start_date:
         type: string
-      refresh_token:
-        type: string
-      role:
-        type: string
-      updated_at:
-        type: string
+    type: object
+  models.Status:
+    properties:
+      status:
+        type: boolean
     type: object
 info:
   contact: {}
 paths:
-  /v1/users/create:
+  /v1/client:
     post:
       consumes:
       - application/json
-      description: Get categories
+      description: This API for create a new client
       parameters:
-      - description: createUserModel
+      - description: Client Model
         in: body
-        name: User
+        name: Client
         required: true
         schema:
-          $ref: '#/definitions/models.CreateUser'
+          $ref: '#/definitions/models.Client'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            type: string
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.StandardErrorModel'
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-      security:
-      - ApiKeyAuth: []
-      summary: Get categories
+            $ref: '#/definitions/models.Error'
+      summary: Create Client
       tags:
-      - user
-  /v1/users/delete/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Api for delete user
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-      security:
-      - ApiKeyAuth: []
-      summary: DeleteUser
-      tags:
-      - user
-  /v1/users/get/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Api for getting user by id
-      parameters:
-      - description: id or email
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-      summary: GetUser
-      tags:
-      - user
-  /v1/users/update/:id:
+      - clients
     put:
       consumes:
       - application/json
-      description: Api for update user
+      description: This API for update a client
       parameters:
-      - description: createUserModel
+      - description: Client Model
         in: body
-        name: User
+        name: Client
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.Client'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserResponse'
+            $ref: '#/definitions/models.Client'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.StandardErrorModel'
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.StandardErrorModel'
-      security:
-      - ApiKeyAuth: []
-      summary: UpdateUser
+            $ref: '#/definitions/models.Error'
+      summary: Update Client
       tags:
-      - user
+      - clients
+  /v1/client/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This API for delete a client
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete Client
+      tags:
+      - clients
+    get:
+      consumes:
+      - application/json
+      description: This API for get a client
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Client'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Client
+      tags:
+      - clients
+  /v1/job:
+    post:
+      consumes:
+      - application/json
+      description: This API for create a new job
+      parameters:
+      - description: Job Model
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/models.Job'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create Job
+      tags:
+      - jobs
+    put:
+      consumes:
+      - application/json
+      description: This API for update a job
+      parameters:
+      - description: Job Model
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/models.Job'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Job'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Job
+      tags:
+      - jobs
+  /v1/job/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This API for delete a job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Job'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete Job
+      tags:
+      - jobs
+    get:
+      consumes:
+      - application/json
+      description: This API for get a job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Job'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Job
+      tags:
+      - jobs
+  /v1/job/add-client:
+    post:
+      consumes:
+      - application/json
+      description: This API for add client to job
+      parameters:
+      - description: Client Job Model
+        in: body
+        name: ClientJob
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientJobs'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/models.Status'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Add Client to Job
+      tags:
+      - jobs
+  /v1/job/remove-client:
+    delete:
+      consumes:
+      - application/json
+      description: This API for remove client from job
+      parameters:
+      - description: Client Job Model
+        in: body
+        name: ClientJob
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientJobs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Status'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Remove Client from Job
+      tags:
+      - jobs
+  /v1/jobs/client-jobs:
+    post:
+      consumes:
+      - application/json
+      description: This API for get clients with job-id
+      parameters:
+      - description: Client Job Request
+        in: body
+        name: ClientJobRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClientWithJobs'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Clients with Job
+      tags:
+      - jobs
 securityDefinitions:
   ApiKeyAuth:
     in: header

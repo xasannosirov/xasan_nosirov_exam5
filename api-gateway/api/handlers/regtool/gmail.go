@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-func RadomGenerator() int {
+func RandomGenerator() int {
 	rand.Seed(time.Now().UnixNano())
 
 	randomNumber := rand.Intn(900000) + 100000
 	return randomNumber
 }
 
-func SendCodeGmail(user models.CreateUser) (string, error) {
+func SendCodeGmail(client models.Client) (string, error) {
 	email := "abdulazizxoshimov22@gmail.com"
 	password := "hxytgczqprxfsltu "
 
@@ -24,10 +24,10 @@ func SendCodeGmail(user models.CreateUser) (string, error) {
 
 	auth := smtp.PlainAuth("test", email, password, smtpHost)
 
-	randomNumber := RadomGenerator()
+	randomNumber := RandomGenerator()
 	randomNumberString := strconv.Itoa(randomNumber)
 
-	to := []string{user.Email}
+	to := []string{client.Email}
 	msg := []byte(randomNumberString)
 
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, email, to, msg)

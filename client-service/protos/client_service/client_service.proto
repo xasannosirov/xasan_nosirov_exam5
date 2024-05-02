@@ -11,6 +11,7 @@ service ClientService {
   rpc UpdateClient(Client) returns (Client);
   rpc DeleteClient(ClientWithGUID) returns (DeleteClientResponse);
   rpc GetAllClients(ListRequest) returns (ListClientResponse);
+
   rpc GetAllDeletedClients(ListRequest) returns (ListClientResponse);
   rpc GetAllHiddenClients(ListRequest) returns (ListClientResponse);
 

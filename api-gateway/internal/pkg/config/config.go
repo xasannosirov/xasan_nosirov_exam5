@@ -18,13 +18,15 @@ type Config struct {
 	APP         string
 	Environment string
 	LogLevel    string
-	Server      struct {
+
+	Server struct {
 		Host         string
 		Port         string
 		ReadTimeout  string
 		WriteTimeout string
 		IdleTimeout  string
 	}
+
 	DB struct {
 		Host     string
 		Port     string
@@ -33,20 +35,24 @@ type Config struct {
 		Password string
 		SSLMode  string
 	}
+
 	Context struct {
 		Timeout string
 	}
+
 	Redis struct {
 		Host     string
 		Port     string
 		Password string
 		Name     string
 	}
+
 	Token struct {
 		Secret     string
 		AccessTTL  time.Duration
 		RefreshTTL time.Duration
 	}
+
 	Minio struct {
 		Endpoint              string
 		AccessKey             string
@@ -54,12 +60,10 @@ type Config struct {
 		Location              string
 		MovieUploadBucketName string
 	}
-	InvestmentService webAddress
-	InvestorService   webAddress
-	ContentService    webAddress
-	AggregateService  webAddress
-	PaymentService    webAddress
-	OTLPCollector     webAddress
+
+	ClientService webAddress
+	JobService    webAddress
+	OTLPCollector webAddress
 }
 
 func NewConfig() (*Config, error) {
@@ -72,16 +76,16 @@ func NewConfig() (*Config, error) {
 	config.Context.Timeout = getEnv("CONTEXT_TIMEOUT", "30s")
 
 	// server configuration
-	config.Server.Host = getEnv("SERVER_HOST", "localhost")
+	config.Server.Host = getEnv("SERVER_HOST", "api-gateway")
 	config.Server.Port = getEnv("SERVER_PORT", ":5555")
 	config.Server.ReadTimeout = getEnv("SERVER_READ_TIMEOUT", "10s")
 	config.Server.WriteTimeout = getEnv("SERVER_WRITE_TIMEOUT", "10s")
 	config.Server.IdleTimeout = getEnv("SERVER_IDLE_TIMEOUT", "120s")
 
 	// db configuration
-	config.DB.Host = getEnv("POSTGRES_HOST", "localhost")
+	config.DB.Host = getEnv("POSTGRES_HOST", "postgres")
 	config.DB.Port = getEnv("POSTGRES_PORT", "5432")
-	config.DB.Name = getEnv("POSTGRES_DATABASE", "csm_api")
+	config.DB.Name = getEnv("POSTGRES_DATABASE", "client_job_services_db")
 	config.DB.User = getEnv("POSTGRES_USER", "postgres")
 	config.DB.Password = getEnv("POSTGRES_PASSWORD", "root")
 	config.DB.SSLMode = getEnv("POSTGRES_SSLMODE", "disable")
@@ -92,8 +96,11 @@ func NewConfig() (*Config, error) {
 	config.Redis.Password = getEnv("REDIS_PASSWORD", "")
 	config.Redis.Name = getEnv("REDIS_DATABASE", "0")
 
-	config.ContentService.Host = getEnv("USER_SERVICE_GRPC_HOST", "localhost")
-	config.ContentService.Port = getEnv("USER_SERVICE_GRPC_PORT", ":1111")
+	// client-job services configuration
+	config.ClientService.Host = getEnv("CLIENT_SERVICE_GRPC_HOST", "client-service")
+	config.ClientService.Port = getEnv("CLIENT_SERVICE_GRPC_PORT", ":1111")
+	config.JobService.Host = getEnv("JOB_SERVICE_GRPC_HOST", "job-service")
+	config.JobService.Port = getEnv("JOB_SERVICE_GRPC_PORT", ":2222")
 
 	// token configuration
 	config.Token.Secret = getEnv("TOKEN_SECRET", "token_secret")

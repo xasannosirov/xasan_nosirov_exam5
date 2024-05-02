@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
 	jobproto "job-service/genproto/job_service"
@@ -59,15 +60,6 @@ func (s jobRPC) UpdateJob(ctx context.Context, in *jobproto.Job) (*jobproto.Job,
 	)
 	defer span.End()
 
-	createdAt, err := time.Parse(time.RFC3339, in.CreatedAt)
-	if err != nil {
-		return nil, err
-	}
-	updatedAt, err := time.Parse(time.RFC3339, in.UpdatedAt)
-	if err != nil {
-		return nil, err
-	}
-
 	updatedJob, err := s.jobUsecase.UpdateJob(ctx, &entity.Job{
 		GUID:           in.Id,
 		Name:           in.Name,
@@ -76,8 +68,6 @@ func (s jobRPC) UpdateJob(ctx context.Context, in *jobproto.Job) (*jobproto.Job,
 		LocationType:   in.LocationType,
 		EmploymentType: in.EmploymentType,
 		Address:        in.Address,
-		UpdatedAt:      updatedAt,
-		CreatedAt:      createdAt,
 	})
 	if err != nil {
 		return nil, err
@@ -213,6 +203,8 @@ func (s jobRPC) GetClientJobs(ctx context.Context, in *jobproto.ClientJobRequest
 	defer span.End()
 
 	offset := in.Limit * (in.Page - 1)
+
+	fmt.Println(in.ClientId)
 
 	clientJobs, err := s.jobUsecase.GetClientJobs(ctx, in.Limit, offset, map[string]string{
 		"client_id": in.ClientId,

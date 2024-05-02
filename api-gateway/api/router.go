@@ -50,13 +50,25 @@ func NewRoute(option RouteOption) *gin.Engine {
 
 	router.Use(middleware.Tracing)
 
-	api := router.Group("/v1")
+	apiV1 := router.Group("/v1")
 
-	// users
-	api.POST("/users/create", HandlerV1.CreateUser)
+	// clients
+	apiV1.POST("/client", HandlerV1.CreateClient)
+	apiV1.PUT("/client", HandlerV1.UpdateClient)
+	apiV1.DELETE("/client/:id", HandlerV1.DeleteClient)
+	apiV1.GET("/client/:id", HandlerV1.GetClient)
+
+	// jobs
+	apiV1.POST("/job", HandlerV1.CreateJob)
+	apiV1.PUT("/job", HandlerV1.UpdateJob)
+	apiV1.DELETE("/job/:id", HandlerV1.DeleteJob)
+	apiV1.GET("/job/:id", HandlerV1.GetJob)
+	apiV1.POST("/job/add-client", HandlerV1.AddClientToJob)
+	apiV1.DELETE("/job/remove-client", HandlerV1.RemoveClientFromJob)
+	apiV1.POST("/jobs/client-jobs", HandlerV1.GetClientsWithJob)
 
 	url := ginSwagger.URL("swagger/doc.json")
-	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	apiV1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	return router
 }

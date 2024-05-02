@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package job_service;
+option go_package = "genproto/job_service";
+
+message Job {
+  string id = 1;
+  string name = 2;
+  float salary = 3;
+  string level = 4;
+  string location_type = 5;
+  string employment_type = 6;
+  string address = 7;
+  string company = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+message ClientJobs {
+  string client_id = 1;
+  string job_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message JobWithGUID {
+  string job_id = 1;
+}
+
+message ClientJobRequest {
+  string client_id = 1;
+  string job_id = 2;
+  uint64 page = 3;
+  uint64 limit = 4;
+}
+
+message ResponseStatus {
+  bool status = 1;
+}
+
+message ListRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+}
+
+message ListJobResponse {
+  repeated Job jobs = 1;
+}
+
+message ListClientJobs {
+  repeated ClientJobs client_jobs = 1;
+}

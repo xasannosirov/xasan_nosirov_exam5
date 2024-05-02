@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	tokens "api-gateway/internal/pkg/token"
 	"context"
 	"net/http"
-	tokens "api-gateway/internal/pkg/token"
 )
 
 func AuthContext(jwtsecret string) func(next http.Handler) http.Handler {

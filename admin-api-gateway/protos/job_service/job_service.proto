@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package job_service;
+option go_package = "genproto/job_service";
+
+import "job_model.proto";
+
+service JobService {
+  rpc CreateJob(Job) returns (JobWithGUID);
+  rpc UpdateJob(Job) returns (Job);
+  rpc DeleteJob(JobWithGUID) returns (ResponseStatus);
+  rpc GetJob(JobWithGUID) returns (Job);
+  rpc GetAllJobs(ListRequest) returns (ListJobResponse);
+
+  rpc GetAllDeletedJobs(ListRequest) returns (ListJobResponse);
+  rpc GetClientJobs(ClientJobRequest) returns (ListClientJobs);
+  rpc GetJobClients(ClientJobRequest) returns (ListClientJobs);
+
+  rpc AddClientJob(ClientJobs) returns (ResponseStatus);
+  rpc DeleteClientJob(ClientJobs) returns (ResponseStatus);
+}

@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+
+  jaeger-all-in-one:
+    container_name: jaeger-all-in-one
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+
+  otel-collector:
+    container_name: otel-collector
+    image: ${OTELCOL_IMG}
+    command: [ "--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}" ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"
+    depends_on:
+      - jaeger-all-in-one
+
+  migrate:
+    image: migrate/migrate
+    networks:
+      - db
+    volumes:
+      - ./client-service/migrations:/migrations
+    command: [ "-path", "/migrations", "-database",  "postgres://postgres:root@postgres:5432/client_job_services_db?sslmode=disable", "up" ]
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      PGDATA: /data/postgres
+      POSTGRES_DB: client_job_services_db
+    volumes:
+      - db:/databasedatadb/postgres
+    ports:
+      - "5332:5332"
+    networks:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  client-service:
+    container_name: client-service
+    build: ./client-service
+    depends_on:
+      - postgres-db
+    ports:
+      - "1111:1111"
+    networks:
+      - db
+
+  job-service:
+    container_name: job-service
+    build: ./job-service
+    depends_on:
+      - postgres-db
+      - client-service
+    ports:
+      - "2222:2222"
+    networks:
+      - db
+
+  admin-api-gateway:
+    container_name: admin-api-gateway
+    build: ./admin-api-gateway
+    depends_on:
+      - postgres-db
+      - client-service
+      - job-service
+    ports:
+      - "4444:4444"
+    networks:
+      - db
+
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    depends_on:
+      - postgres-db
+      - client-service
+      - job-service
+      - admin-api-gateway
+    ports:
+      - "5555:5555"
+    networks:
+      - db
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:

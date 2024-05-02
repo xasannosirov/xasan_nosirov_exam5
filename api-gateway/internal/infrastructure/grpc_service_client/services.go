@@ -4,25 +4,38 @@ import (
 	"api-gateway/internal/pkg/config"
 	"fmt"
 
-	pbu "api-gateway/genproto/user_service"
+	clientproto "api-gateway/genproto/client_service"
+	jobproto "api-gateway/genproto/job_service"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
 type ServiceClient interface {
-	UserService() pbu.UserServiceClient
+	JobService() jobproto.JobServiceClient
+	ClientService() clientproto.ClientServiceClient
 	Close()
 }
 
 type serviceClient struct {
-	connections []*grpc.ClientConn
-	userService pbu.UserServiceClient
+	connections   []*grpc.ClientConn
+	clientService clientproto.ClientServiceClient
+	jobService    jobproto.JobServiceClient
 }
 
 func New(cfg *config.Config) (ServiceClient, error) {
-	connUserService, err := grpc.Dial(
-		fmt.Sprintf("%s%s", cfg.ContentService.Host, cfg.ContentService.Port),
+	clientServiceConnection, err := grpc.Dial(
+		fmt.Sprintf("%s%s", cfg.ClientService.Host, cfg.ClientService.Port),
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	jobServiceConnection, err := grpc.Dial(
+		fmt.Sprintf("%s%s", cfg.JobService.Host, cfg.JobService.Port),
 		grpc.WithInsecure(),
 		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
 		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
@@ -32,15 +45,21 @@ func New(cfg *config.Config) (ServiceClient, error) {
 	}
 
 	return &serviceClient{
-		userService: pbu.NewUserServiceClient(connUserService),
+		clientService: clientproto.NewClientServiceClient(clientServiceConnection),
+		jobService:    jobproto.NewJobServiceClient(jobServiceConnection),
 		connections: []*grpc.ClientConn{
-			connUserService,
+			clientServiceConnection,
+			jobServiceConnection,
 		},
 	}, nil
 }
 
-func (s *serviceClient) UserService() pbu.UserServiceClient {
-	return s.userService
+func (s *serviceClient) ClientService() clientproto.ClientServiceClient {
+	return s.clientService
+}
+
+func (s *serviceClient) JobService() jobproto.JobServiceClient {
+	return s.jobService
 }
 
 func (s *serviceClient) Close() {
