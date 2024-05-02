@@ -456,56 +456,16 @@ func (p clientRepo) UniqueEmail(ctx context.Context, request *entity.IsUnique) (
 	ctx, span := otlp.Start(ctx, clientsSpanRepoPrefix+"_grpc-repository", "UniqueEmail")
 	defer span.End()
 
-	var (
-		client entity.Client
-	)
-	queryBuilder := p.clientsSelectQueryPrefix()
-	queryBuilder = queryBuilder.Where(p.db.Sq.Equal("email", request.Email))
-	queryBuilder = queryBuilder.Where("deleted_at IS NULL")
+	var count uint64
+	query := `SELECT COUNT(*) FROM clients WHERE email = $1`
 
-	query, args, err := queryBuilder.ToSql()
-	if err != nil {
-		return nil, p.db.ErrSQLBuild(err, fmt.Sprintf("%s %s", p.tableName, "get"))
+	row := p.db.QueryRow(ctx, query, request.Email)
+	if err := row.Scan(&count); err != nil {
+		return &entity.Response{Status: false}, err
 	}
-	var (
-		nullAge         sql.NullInt32
-		nullGender      sql.NullString
-		nullPhoneNumber sql.NullString
-		nullAddress     sql.NullString
-		nullDeletedAt   sql.NullTime
-	)
-	if err = p.db.QueryRow(ctx, query, args...).Scan(
-		&client.GUID,
-		&client.FirstName,
-		&client.LastName,
-		&nullAge,
-		&nullGender,
-		&nullPhoneNumber,
-		&nullAddress,
-		&client.Email,
-		&client.Password,
-		&client.Status,
-		&client.Refresh,
-		&client.CreatedAt,
-		&client.UpdatedAt,
-		&nullDeletedAt,
-	); err != nil {
-		return &entity.Response{Status: false}, p.db.Error(err)
-	}
-	if nullAge.Valid {
-		client.Age = uint64(nullAge.Int32)
-	}
-	if nullGender.Valid {
-		client.Gender = nullGender.String
-	}
-	if nullPhoneNumber.Valid {
-		client.PhoneNumber = nullPhoneNumber.String
-	}
-	if nullAddress.Valid {
-		client.Address = nullAddress.String
-	}
-	if nullDeletedAt.Valid {
-		client.DeletedAt = nullDeletedAt.Time
+
+	if count == 0 {
+		return &entity.Response{Status: false}, nil
 	}
 
 	return &entity.Response{Status: true}, nil

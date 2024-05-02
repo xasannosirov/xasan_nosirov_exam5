@@ -274,12 +274,15 @@ func (s clientRPC) UniqueEmail(ctx context.Context, in *clientproto.IsUnique) (*
 	)
 	defer span.End()
 
-	_, err := s.clientUsecase.UniqueEmail(ctx, &entity.IsUnique{
+	response, err := s.clientUsecase.UniqueEmail(ctx, &entity.IsUnique{
 		Email: in.Email,
 	})
 	if err != nil {
 		s.logger.Error(err.Error())
 		return &clientproto.ResponseStatus{Status: false}, err
+	}
+	if response.Status {
+		return &clientproto.ResponseStatus{Status: false}, errors.New("email already exists")
 	}
 
 	return &clientproto.ResponseStatus{Status: true}, nil
